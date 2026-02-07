@@ -1,15 +1,14 @@
-import './App.css'
+// 1. Importamos el componente desde la carpeta donde lo creaste
+import LoginPage from "./pages/loginPage";
 
-const App = () => {
-  const nombreEmpresa = "Mi Startup de Inventario";
-
+function App() {
   return (
-    <div style={{ textAlign: 'center', marginTop: '50px' }}>
-      <h1>Bienvenido a {nombreEmpresa}</h1>
-      <p>Configuración completada con éxito 🚀</p>
-      <button onClick={() => alert('¡Funciona!')}>Probar Sistema</button>
+    // 2. Usamos el componente como si fuera una etiqueta HTML personalizada
+    <div className="App">
+      <LoginPage />
     </div>
   );
-};
+}
 
+// 3. Exportamos para que Vite sepa qué mostrar en el navegador
 export default App;
