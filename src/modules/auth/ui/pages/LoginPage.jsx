@@ -72,7 +72,6 @@ const LoginPage = () => {
       // Si el login fue exitoso, limpiar y redirigir
       setEmail('');
       setPassword('');
-      // TODO: Reemplazar por ruta correcta del dashboard
       navigate('/dashboard');
     } catch (err) {
       // El error ya está en el contexto, pero también lo mostramos localmente
