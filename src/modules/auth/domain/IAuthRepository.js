@@ -18,6 +18,10 @@ export class IAuthRepository {
     throw new Error('login() debe ser implementado por la subclase');
   }
 
+  async register(user) {
+    throw new Error('register() debe ser implementado por la subclase');
+  }
+
   /**
    * Desautentica al usuario actual
    * @returns {Promise<void>}

@@ -1,11 +1,12 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
-import LoginPage from './modules/auth/ui/pages/LoginPage';
-import DashboardPage from './modules/auth/ui/pages/dashboardPage';
-import { ProtectedRoute } from './shared/ui/components';
+import { Routes, Route, Navigate } from "react-router-dom";
+import LoginPage from "./modules/auth/ui/pages/LoginPage";
+import RegisterPage from "./modules/auth/ui/pages/RegisterPage";
+import DashboardPage from "./modules/auth/ui/pages/dashboardPage";
+import { ProtectedRoute } from "./shared/ui/components";
 
 /**
  * App - Root Component
- * 
+ *
  * Configura las rutas de la aplicación.
  * Router y AuthProvider ya están en main.jsx
  */
@@ -15,6 +16,7 @@ function App() {
     <Routes>
       {/* Ruta pública */}
       <Route path="/" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
 
       {/* Rutas protegidas */}
       <Route

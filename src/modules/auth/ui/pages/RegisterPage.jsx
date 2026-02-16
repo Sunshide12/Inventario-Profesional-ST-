@@ -1,12 +1,10 @@
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import {
   Alert,
   Avatar,
   Box,
   Button,
-  Checkbox,
   Container,
-  FormControlLabel,
   Grid,
   Link,
   Paper,
@@ -18,29 +16,21 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../../shared/ui/hooks/useAuth";
 
 /**
- * LoginPage - Página de Login (Primary Adapter - UI)
+ * RegisterPage - Página de Registro (Primary Adapter - UI)
  *
- * Consumidor del contexto de autenticación.
- * Solo maneja:
- * - Estados de UI (email, password, error)
- * - Interacción con el usuario
- * - Validaciones de presentación
- *
- * La lógica de negocio (login propiamente) está en el caso de uso.
+ * Muy similar a `LoginPage.jsx`. Valida la entrada y usa el contexto
+ * para ejecutar el caso de uso `register`.
  */
 
-const LoginPage = () => {
+const RegisterPage = () => {
   const navigate = useNavigate();
-  const { login, loading, error: contextError } = useAuth();
+  const { register, loading, error: contextError } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [localError, setLocalError] = useState(null);
-  const [rememberMe, setRememberMe] = useState(false);
 
-  /**
-   * Valida antes de hacer submit
-   */
   const validateForm = () => {
     if (!email.trim()) {
       setLocalError("El email es requerido");
@@ -50,31 +40,30 @@ const LoginPage = () => {
       setLocalError("La contraseña es requerida");
       return false;
     }
+    if (password.length < 6) {
+      setLocalError("La contraseña debe tener al menos 6 caracteres");
+      return false;
+    }
+    if (password !== confirmPassword) {
+      setLocalError("Las contraseñas no coinciden");
+      return false;
+    }
     return true;
   };
 
-  /**
-   * Maneja el submit del formulario
-   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLocalError(null);
 
-    // Validación de presentación
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     try {
-      // El contexto ejecuta el caso de uso
-      await login(email, password);
-
-      // Si el login fue exitoso, limpiar y redirigir
+      await register(email, password);
       setEmail("");
       setPassword("");
+      setConfirmPassword("");
       navigate("/dashboard");
     } catch (err) {
-      // El error ya está en el contexto, pero también lo mostramos localmente
       setLocalError(err.message);
     }
   };
@@ -102,7 +91,6 @@ const LoginPage = () => {
             width: "100%",
           }}
         >
-          {/* Avatar */}
           <Avatar
             sx={{
               m: "auto",
@@ -111,12 +99,11 @@ const LoginPage = () => {
               height: { xs: 40, sm: 56 },
             }}
           >
-            <LockOutlinedIcon
+            <PersonAddIcon
               sx={{ fontSize: { xs: "1.25rem", sm: "1.75rem" } }}
             />
           </Avatar>
 
-          {/* Título */}
           <Typography
             component="h1"
             variant="h5"
@@ -128,24 +115,21 @@ const LoginPage = () => {
               fontWeight: 600,
             }}
           >
-            Iniciar Sesión
+            Crear Cuenta
           </Typography>
 
-          {/* Error Alert */}
           {displayError && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {displayError}
             </Alert>
           )}
 
-          {/* Formulario */}
           <Box
             component="form"
             onSubmit={handleSubmit}
             noValidate
             sx={{ mt: 2 }}
           >
-            {/* Email Input */}
             <TextField
               placeholder="Correo Electrónico"
               type="email"
@@ -160,7 +144,6 @@ const LoginPage = () => {
               inputProps={{ "aria-label": "email" }}
             />
 
-            {/* Password Input */}
             <TextField
               placeholder="Contraseña"
               type="password"
@@ -174,21 +157,19 @@ const LoginPage = () => {
               inputProps={{ "aria-label": "password" }}
             />
 
-            {/* Remember Me */}
-            <FormControlLabel
-              control={
-                <Checkbox
-                  size="small"
-                  color="primary"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                />
-              }
-              label="Recuérdame"
+            <TextField
+              placeholder="Confirmar Contraseña"
+              type="password"
+              fullWidth
+              required
+              size="small"
               sx={{ mb: 2 }}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              disabled={loading}
+              inputProps={{ "aria-label": "confirm-password" }}
             />
 
-            {/* Submit Button */}
             <Button
               type="submit"
               disabled={loading}
@@ -196,31 +177,14 @@ const LoginPage = () => {
               fullWidth
               sx={{ mt: 2, py: 1.25, fontWeight: 600 }}
             >
-              {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
+              {loading ? "Creando cuenta..." : "Crear Cuenta"}
             </Button>
           </Box>
 
-          {/* Links */}
-          <Grid
-            container
-            justifyContent="space-between"
-            flexDirection={{ xs: "column", sm: "row" }}
-            alignItems={{ xs: "center", sm: "flex-start" }}
-            gap={{ xs: 1, sm: 0 }}
-            sx={{ mt: 3 }}
-          >
+          <Grid container justifyContent="center" sx={{ mt: 3 }}>
             <Grid>
-              <Link
-                component={RouterLink}
-                to="/forgot-password"
-                variant="body2"
-              >
-                ¿Olvidaste tu contraseña?
-              </Link>
-            </Grid>
-            <Grid>
-              <Link component={RouterLink} to="/register" variant="body2">
-                Crear cuenta
+              <Link component={RouterLink} to="/login" variant="body2">
+                ¿Ya tienes una cuenta? Inicia sesión
               </Link>
             </Grid>
           </Grid>
@@ -230,4 +194,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage;

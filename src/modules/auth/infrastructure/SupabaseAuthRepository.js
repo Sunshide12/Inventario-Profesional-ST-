@@ -1,13 +1,13 @@
-import { IAuthRepository } from '../domain/IAuthRepository';
-import { User } from '../domain/User';
-import { supabaseClient } from '../../../shared/infrastructure/supabaseClient';
+import { IAuthRepository } from "../domain/IAuthRepository";
+import { User } from "../domain/User";
+import { supabaseClient } from "../../../shared/infrastructure/supabaseClient";
 
 /**
  * SupabaseAuthRepository - ADAPTADOR (Infrastructure Layer)
- * 
+ *
  * Implementación concreta del puerto IAuthRepository usando Supabase.
  * Aquí vive toda la magia técnica de Supabase.
- * 
+ *
  * Si cambias a Firebase mañana, crearías FirebaseAuthRepository.js
  * y solo cambiarías una línea en el DI Container.
  */
@@ -30,7 +30,35 @@ export class SupabaseAuthRepository extends IAuthRepository {
     }
 
     // Parsear respuesta de Supabase a entidad User del dominio
-    return new User(data.user.id, data.user.email, data.user.user_metadata?.name);
+    return new User(
+      data.user.id,
+      data.user.email,
+      data.user.user_metadata?.name,
+    );
+  }
+
+  /**
+   * Registro con Supabase
+   * @param {string} email
+   * @param {string} password
+   * @returns {Promise<User>}
+   */
+
+  async register(email, password) {
+    const { data, error } = await supabaseClient.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return new User(
+      data.user.id,
+      data.user.email,
+      data.user.user_metadata?.name,
+    );
   }
 
   /**
@@ -58,7 +86,10 @@ export class SupabaseAuthRepository extends IAuthRepository {
     // Retornamos null en lugar de lanzar error
     if (error) {
       // Solo lanzamos error si es algo grave (no es falta de sesión)
-      if (error.message?.includes('session') || error.message?.includes('Session')) {
+      if (
+        error.message?.includes("session") ||
+        error.message?.includes("Session")
+      ) {
         return null; // Sin autenticación es normal
       }
       throw new Error(error.message);
@@ -69,24 +100,5 @@ export class SupabaseAuthRepository extends IAuthRepository {
     }
 
     return new User(user.id, user.email, user.user_metadata?.name);
-  }
-
-  /**
-   * Registro con Supabase
-   * @param {string} email
-   * @param {string} password
-   * @returns {Promise<User>}
-   */
-  async signUp(email, password) {
-    const { data, error } = await supabaseClient.auth.signUp({
-      email,
-      password,
-    });
-
-    if (error) {
-      throw new Error(error.message);
-    }
-
-    return new User(data.user.id, data.user.email, data.user.user_metadata?.name);
   }
 }

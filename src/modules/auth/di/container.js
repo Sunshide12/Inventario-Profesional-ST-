@@ -1,24 +1,25 @@
-import { LoginUserUseCase } from '../application/LoginUserUseCase';
-import { LogoutUserUseCase } from '../application/LogoutUserUseCase';
-import { GetCurrentUserUseCase } from '../application/GetCurrentUserUseCase';
-import { SupabaseAuthRepository } from '../infrastructure/SupabaseAuthRepository';
+import { LoginUserUseCase } from "../application/LoginUserUseCase";
+import { RegisterUserUseCase } from "../application/RegisterUserUseCase";
+import { LogoutUserUseCase } from "../application/LogoutUserUseCase";
+import { GetCurrentUserUseCase } from "../application/GetCurrentUserUseCase";
+import { SupabaseAuthRepository } from "../infrastructure/SupabaseAuthRepository";
 // import { LocalAuthRepository } from '../infrastructure/LocalAuthRepository'; // Descomentar para offline
 
 /**
  * AuthContainer - Contenedor de Inyección de Dependencias (DI Container)
- * 
+ *
  * ✨ ESTA ES LA ÚNICA FUENTE DE VERDAD PARA OBTENER CASOS DE USO ARMADOS
- * 
+ *
  * Responsabilidades:
  * 1. Instanciar el adaptador de repositorio (SupabaseAuthRepository)
  * 2. Inyectarlo en los Casos de Uso a través del constructor
  * 3. Exportar los casos de uso "listos para usar"
- * 
+ *
  * CAMBIO RÁPIDO DE INFRAESTRUCTURA (Supabase ↔ Firebase ↔ Local):
  * Solo descomenta/comenta la línea:
  *   this.authRepository = new SupabaseAuthRepository();
  *   // this.authRepository = new LocalAuthRepository();
- * 
+ *
  * Todo lo demás sigue funcionando. El hexágono está desacoplado.
  */
 
@@ -33,6 +34,7 @@ class AuthContainer {
     // PASO 2: Inyecta el repositorio en los casos de uso
     // (Constructor Injection)
     this.loginUserUseCase = new LoginUserUseCase(this.authRepository);
+    this.registerUserUseCase = new RegisterUserUseCase(this.authRepository);
     this.logoutUserUseCase = new LogoutUserUseCase(this.authRepository);
     this.currentUserUseCase = new GetCurrentUserUseCase(this.authRepository);
   }
@@ -42,6 +44,10 @@ class AuthContainer {
    */
   getLoginUserUseCase() {
     return this.loginUserUseCase;
+  }
+
+  getRegisterUserUseCase() {
+    return this.registerUserUseCase;
   }
 
   getLogoutUserUseCase() {
